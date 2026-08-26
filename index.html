@@ -1,0 +1,1407 @@
+<!doctype html>
+<html lang="az">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<title>Mini Kafe Kassası</title>
+<style>
+  :root{
+    --bg:#f3f5f8;
+    --card:#ffffff;
+    --text:#111827;
+    --muted:#667085;
+    --border:#e4e7ec;
+    --primary:#111827;
+    --primary-soft:#eef0f3;
+    --danger:#b42318;
+    --danger-soft:#fef3f2;
+    --ok:#067647;
+    --ok-soft:#ecfdf3;
+    --warning:#b54708;
+    --warning-soft:#fffaeb;
+    --accent:#344054;
+    --shadow:0 10px 30px rgba(16,24,40,.06);
+    --radius:18px;
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+  }
+  button,input,select,textarea{font:inherit}
+  button{touch-action:manipulation}
+
+  .app-header{
+    position:sticky;
+    top:0;
+    z-index:20;
+    background:rgba(255,255,255,.94);
+    backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--border);
+  }
+  .header-inner{
+    max-width:1280px;
+    margin:0 auto;
+    padding:14px 18px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:14px;
+  }
+  .brand{min-width:0}
+  .brand h1{margin:0;font-size:20px;line-height:1.2;letter-spacing:-.02em}
+  .brand p{margin:4px 0 0;color:var(--muted);font-size:13px}
+  .header-date{font-size:13px;color:var(--muted);white-space:nowrap;text-align:right}
+
+  .wrap{
+    max-width:1280px;
+    margin:0 auto;
+    padding:18px;
+    display:grid;
+    grid-template-columns:minmax(0,1.15fr) minmax(380px,.85fr);
+    gap:16px;
+    align-items:start;
+  }
+
+  .card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:16px;
+    box-shadow:var(--shadow);
+  }
+  .right-card{position:sticky;top:84px}
+
+  .section-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:12px;
+  }
+  h2{font-size:17px;margin:0;letter-spacing:-.01em}
+  h3{font-size:14px;margin:0}
+  .muted{color:var(--muted)}
+  .small{font-size:12px}
+
+  .product-form{
+    display:grid;
+    grid-template-columns:minmax(170px,1.5fr) minmax(135px,.8fr) 120px auto;
+    gap:8px;
+    margin-bottom:12px;
+  }
+  input,select,textarea{
+    width:100%;
+    border:1px solid var(--border);
+    border-radius:11px;
+    padding:11px 12px;
+    color:var(--text);
+    background:#fff;
+    outline:none;
+    transition:border-color .15s,box-shadow .15s;
+  }
+  input:focus,select:focus,textarea:focus{
+    border-color:#98a2b3;
+    box-shadow:0 0 0 3px rgba(152,162,179,.16);
+  }
+  textarea{resize:vertical;min-height:72px}
+
+  button{
+    border:0;
+    border-radius:11px;
+    padding:11px 13px;
+    cursor:pointer;
+    background:var(--primary);
+    color:#fff;
+    font-weight:700;
+    transition:transform .08s,opacity .15s,background .15s;
+  }
+  button:hover{opacity:.93}
+  button:active{transform:translateY(1px)}
+  button:disabled{opacity:.45;cursor:not-allowed;transform:none}
+  button.secondary{background:var(--primary-soft);color:var(--text)}
+  button.ghost{background:#fff;color:var(--text);border:1px solid var(--border)}
+  button.danger{background:var(--danger-soft);color:var(--danger)}
+  button.ok{background:var(--ok-soft);color:var(--ok)}
+  button.warning{background:var(--warning-soft);color:var(--warning)}
+  button.icon-btn{width:34px;height:34px;padding:0;display:grid;place-items:center;border-radius:9px}
+
+  .edit-banner{
+    display:none;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin:-2px 0 10px;
+    padding:9px 11px;
+    border-radius:11px;
+    background:var(--warning-soft);
+    color:var(--warning);
+    font-size:13px;
+    font-weight:650;
+  }
+  .edit-banner.visible{display:flex}
+
+  .toolbar{
+    display:grid;
+    grid-template-columns:minmax(180px,1fr) 180px;
+    gap:8px;
+    margin-bottom:12px;
+  }
+
+  .products{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:10px;
+  }
+  .product{
+    border:1px solid var(--border);
+    background:#fff;
+    border-radius:14px;
+    min-height:112px;
+    padding:12px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    transition:border-color .15s,box-shadow .15s,transform .08s;
+  }
+  .product:hover{border-color:#c7ccd4;box-shadow:0 5px 16px rgba(16,24,40,.05)}
+  .product-main{
+    flex:1;
+    cursor:pointer;
+    border-radius:10px;
+    padding:2px;
+    outline:none;
+  }
+  .product-main:focus-visible{box-shadow:0 0 0 3px rgba(152,162,179,.22)}
+  .product-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+  .product-name{font-weight:800;font-size:15px;line-height:1.3;overflow-wrap:anywhere}
+  .product-category{
+    display:inline-flex;
+    align-items:center;
+    width:max-content;
+    max-width:100%;
+    padding:3px 7px;
+    border-radius:999px;
+    background:#f2f4f7;
+    color:var(--muted);
+    font-size:11px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .product-price{font-size:18px;font-weight:800;margin-top:7px}
+  .product-actions{display:flex;gap:6px;justify-content:flex-end;border-top:1px solid #f2f4f7;padding-top:8px}
+  .product-actions button{font-size:12px;padding:7px 9px}
+
+  .empty{
+    grid-column:1/-1;
+    color:var(--muted);
+    padding:24px 8px;
+    text-align:center;
+    border:1px dashed var(--border);
+    border-radius:13px;
+    background:#fafafa;
+  }
+
+  .settings,.history{
+    margin-top:14px;
+    border-top:1px solid var(--border);
+    padding-top:12px;
+  }
+  details summary{cursor:pointer;font-weight:750;list-style:none}
+  details summary::-webkit-details-marker{display:none}
+  details summary::after{content:"＋";float:right;color:var(--muted)}
+  details[open] summary::after{content:"−"}
+  .settings-grid{
+    display:grid;
+    grid-template-columns:1.4fr .8fr .8fr;
+    gap:10px;
+    margin-top:12px;
+  }
+  label.field{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--muted);font-weight:650}
+  .settings-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .note{font-size:12px;color:var(--muted);margin-top:9px;line-height:1.45}
+
+  .dashboard{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:8px;
+    margin-bottom:14px;
+  }
+  .stat{border:1px solid var(--border);border-radius:13px;padding:11px;background:#fafafa;min-width:0}
+  .stat .label{font-size:11px;color:var(--muted);margin-bottom:5px;line-height:1.25}
+  .stat .value{font-size:18px;font-weight:850;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+  .tables-wrap{margin-bottom:14px}
+  .table-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+  .active-table-label{font-size:13px;color:var(--muted);font-weight:700}
+  .tables{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px}
+  .table-btn{position:relative;background:#f2f4f7;color:var(--text);padding:10px 6px;border:1px solid var(--border);font-size:13px}
+  .table-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+  .table-btn.has-order::after{
+    content:"";
+    position:absolute;
+    top:6px;
+    right:6px;
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:#12b76a;
+    box-shadow:0 0 0 2px rgba(255,255,255,.8);
+  }
+  .table-btn.active.has-order::after{box-shadow:0 0 0 2px var(--primary)}
+
+  .cart{display:flex;flex-direction:column;gap:8px;max-height:37vh;overflow:auto;padding-right:2px}
+  .cart-item{border:1px solid var(--border);border-radius:12px;padding:10px;background:#fff}
+  .cart-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+  .cart-name{font-weight:750;overflow-wrap:anywhere}
+  .cart-price{white-space:nowrap;font-weight:800}
+  .qty{display:flex;align-items:center;gap:7px;margin-top:8px;flex-wrap:wrap}
+  .qty button{width:32px;height:32px;padding:0;background:#f2f4f7;color:var(--text)}
+  .qty .trash{margin-left:auto;background:var(--danger-soft);color:var(--danger);width:auto;padding:0 10px}
+  .unit-price{font-size:12px;color:var(--muted)}
+
+  .order-options{display:grid;grid-template-columns:1fr 120px;gap:8px;margin-top:12px}
+  .order-options textarea{min-height:58px}
+  .discount-wrap{display:flex;flex-direction:column;gap:6px}
+  .discount-wrap label{font-size:12px;color:var(--muted);font-weight:650}
+  .discount-input{position:relative}
+  .discount-input input{padding-right:28px}
+  .discount-input span{position:absolute;right:10px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px}
+
+  .summary{border-top:2px solid var(--border);margin-top:14px;padding-top:13px}
+  .summary-line{display:flex;justify-content:space-between;gap:10px;margin-bottom:7px;color:var(--muted);font-size:13px}
+  .summary-line strong{color:var(--text)}
+  .total{display:flex;justify-content:space-between;align-items:center;font-size:24px;font-weight:900;margin:10px 0 12px;letter-spacing:-.02em}
+  .payment-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+  .actions{display:grid;grid-template-columns:1.2fr .8fr;gap:8px}
+
+  .sale-msg{
+    display:none;
+    margin-top:10px;
+    padding:11px;
+    border-radius:11px;
+    background:var(--ok-soft);
+    color:var(--ok);
+    font-weight:700;
+    font-size:13px;
+  }
+  .sale-msg.visible{display:block}
+  .sale-msg-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}
+  .sale-msg-actions button{padding:7px 9px;font-size:12px}
+
+  .history-list{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+  .history-item{border:1px solid var(--border);border-radius:12px;padding:9px 10px;background:#fafafa}
+  .history-item summary{font-weight:650;font-size:13px}
+  .history-item summary::after{content:"⌄"}
+  .history-item[open] summary::after{content:"⌃"}
+  .history-meta{display:flex;justify-content:space-between;gap:8px;align-items:center}
+  .history-total{font-weight:800;white-space:nowrap}
+  .history-detail{margin-top:9px;padding-top:9px;border-top:1px dashed var(--border);font-size:12px;color:var(--muted);line-height:1.5}
+  .history-products{margin:6px 0 0;padding-left:18px}
+  .history-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
+  .history-actions button{padding:7px 9px;font-size:12px}
+  .history-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+
+  .toast{
+    position:fixed;
+    left:50%;
+    bottom:22px;
+    transform:translate(-50%,18px);
+    opacity:0;
+    pointer-events:none;
+    z-index:50;
+    background:#101828;
+    color:#fff;
+    padding:10px 14px;
+    border-radius:12px;
+    font-size:13px;
+    box-shadow:0 12px 30px rgba(16,24,40,.24);
+    transition:.2s ease;
+    max-width:min(92vw,560px);
+    text-align:center;
+  }
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+
+  .sr-only{
+    position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
+    clip:rect(0,0,0,0);white-space:nowrap;border:0;
+  }
+
+  @media(max-width:1040px){
+    .wrap{grid-template-columns:1fr}
+    .right-card{position:static}
+    .cart{max-height:none}
+  }
+  @media(max-width:760px){
+    .header-inner{padding:12px 12px}
+    .header-date{display:none}
+    .wrap{padding:10px;gap:10px}
+    .card{border-radius:15px;padding:12px;box-shadow:none}
+    .product-form{grid-template-columns:1fr 1fr}
+    .product-form button{grid-column:1/-1}
+    .toolbar{grid-template-columns:1fr}
+    .products{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .settings-grid{grid-template-columns:1fr}
+    .dashboard{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .tables{grid-template-columns:repeat(5,minmax(0,1fr))}
+  }
+  @media(max-width:430px){
+    .products{grid-template-columns:1fr 1fr}
+    .product{min-height:105px;padding:10px}
+    .product-name{font-size:14px}
+    .product-price{font-size:17px}
+    .tables{grid-template-columns:repeat(5,minmax(0,1fr))}
+    .table-btn{font-size:12px;padding:9px 3px}
+    .order-options{grid-template-columns:1fr}
+    .payment-row,.actions{grid-template-columns:1fr}
+  }
+
+  @media print{
+    body>*{display:none!important}
+  }
+</style>
+</head>
+<body>
+<header class="app-header">
+  <div class="header-inner">
+    <div class="brand">
+      <h1 id="headerCafeName">☕ Mini Kafe Kassası</h1>
+      <p>Masa hesabı və gündəlik satış nəzarəti</p>
+    </div>
+    <div class="header-date" id="headerDate"></div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="card">
+    <div class="section-head">
+      <h2>Məhsullar</h2>
+      <span class="small muted" id="productCountLabel">0 məhsul</span>
+    </div>
+
+    <div id="editBanner" class="edit-banner">
+      <span id="editBannerText">Məhsul redaktə olunur</span>
+      <button class="warning" id="cancelEdit" type="button">Ləğv et</button>
+    </div>
+
+    <div class="product-form">
+      <input id="name" type="text" maxlength="80" autocomplete="off" placeholder="Məhsulun adı (məs. Latte)" aria-label="Məhsulun adı">
+      <input id="category" type="text" maxlength="40" autocomplete="off" placeholder="Kateqoriya" aria-label="Kateqoriya">
+      <input id="price" type="number" min="0" step="0.01" inputmode="decimal" placeholder="Qiymət" aria-label="Qiymət">
+      <button id="addProduct" type="button">+ Əlavə et</button>
+    </div>
+
+    <div class="toolbar">
+      <input id="search" type="search" autocomplete="off" placeholder="Məhsul axtar..." aria-label="Məhsul axtar">
+      <select id="categoryFilter" aria-label="Kateqoriyaya görə filtr">
+        <option value="">Bütün kateqoriyalar</option>
+      </select>
+    </div>
+
+    <div id="products" class="products" aria-live="polite"></div>
+
+    <details class="settings">
+      <summary>Ayarlar və məlumatların idarə edilməsi</summary>
+
+      <div class="settings-grid">
+        <label class="field">Kafenin adı
+          <input id="cafeName" type="text" maxlength="60" placeholder="Mini Kafe">
+        </label>
+        <label class="field">Valyuta
+          <select id="currency">
+            <option value="₼">₼ AZN</option>
+            <option value="₺">₺ TRY</option>
+            <option value="$">$ USD</option>
+            <option value="€">€ EUR</option>
+          </select>
+        </label>
+        <label class="field">Masa sayı
+          <select id="tableCount">
+            <option>5</option>
+            <option selected>10</option>
+            <option>15</option>
+            <option>20</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="settings-actions">
+        <button class="secondary" id="saveSettings" type="button">Ayarları yadda saxla</button>
+        <button class="secondary" id="demo" type="button">Nümunə məhsulları əlavə et</button>
+        <button class="ghost" id="exportBackup" type="button">Ehtiyat nüsxə yarat</button>
+        <button class="ghost" id="importBackupBtn" type="button">Ehtiyat nüsxəni bərpa et</button>
+        <input class="sr-only" id="importBackupFile" type="file" accept="application/json,.json">
+        <button class="danger" id="clearProducts" type="button">Bütün məhsulları sil</button>
+      </div>
+      <div class="note">
+        Məhsullar, masa hesabları, qeydlər və satış tarixçəsi bu cihazın brauzerində saxlanılır.
+        Brauzer məlumatları silinərsə, bu məlumatlar da silinə bilər. Buna görə vaxtaşırı ehtiyat nüsxə yaratmaq tövsiyə olunur.
+      </div>
+    </details>
+  </section>
+
+  <aside class="card right-card">
+    <div class="dashboard">
+      <div class="stat">
+        <div class="label">Bugünkü dövriyyə</div>
+        <div class="value" id="dailyTotal">0,00 ₼</div>
+      </div>
+      <div class="stat">
+        <div class="label">Satış sayı</div>
+        <div class="value" id="dailyCount">0</div>
+      </div>
+      <div class="stat">
+        <div class="label">Orta satış</div>
+        <div class="value" id="averageSale">0,00 ₼</div>
+      </div>
+      <div class="stat">
+        <div class="label">Açıq masalar</div>
+        <div class="value" id="openTables">0</div>
+      </div>
+    </div>
+
+    <div class="tables-wrap">
+      <div class="table-head">
+        <h2>Masalar</h2>
+        <span class="active-table-label" id="activeTableLabel">Masa 1</span>
+      </div>
+      <div id="tables" class="tables"></div>
+    </div>
+
+    <div class="section-head">
+      <h2>Hesab / Səbət</h2>
+      <span class="small muted" id="cartItemCount">0 məhsul</span>
+    </div>
+    <div id="cart" class="cart"></div>
+
+    <div class="order-options">
+      <textarea id="tableNote" maxlength="240" placeholder="Masa üçün qeyd (istəyə bağlı)" aria-label="Masa üçün qeyd"></textarea>
+      <div class="discount-wrap">
+        <label for="discount">Endirim</label>
+        <div class="discount-input">
+          <input id="discount" type="number" min="0" max="100" step="0.5" value="0" inputmode="decimal">
+          <span>%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="summary">
+      <div class="summary-line"><span>Ara cəm</span><strong id="subtotal">0,00 ₼</strong></div>
+      <div class="summary-line"><span>Endirim</span><strong id="discountAmount">0,00 ₼</strong></div>
+      <div class="total">
+        <span>CƏMİ</span>
+        <span id="total">0,00 ₼</span>
+      </div>
+
+      <div class="payment-row">
+        <select id="paymentMethod" aria-label="Ödəniş üsulu">
+          <option value="Nağd">Nağd</option>
+          <option value="Kart">Kart</option>
+          <option value="Qarışıq">Qarışıq</option>
+        </select>
+        <button class="ghost" id="printCurrent" type="button">Cari hesabı çap et</button>
+      </div>
+
+      <div class="actions">
+        <button class="ok" id="complete" type="button">Satışı tamamla</button>
+        <button class="danger" id="clearCart" type="button">Masanı təmizlə</button>
+      </div>
+
+      <div id="saleMsg" class="sale-msg" aria-live="polite">
+        <div id="saleMsgText"></div>
+        <div class="sale-msg-actions">
+          <button class="ok" id="printLastSale" type="button">Son qəbzi çap et</button>
+        </div>
+      </div>
+    </div>
+
+    <details class="history">
+      <summary>Bugünkü satış tarixçəsi</summary>
+      <div id="historyList" class="history-list"></div>
+      <div class="history-toolbar">
+        <button class="ghost" id="exportCsv" type="button">Bugünkü satışları CSV kimi ixrac et</button>
+        <button class="danger" id="resetDay" type="button">Bugünkü satışları sıfırla</button>
+      </div>
+    </details>
+  </aside>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  'use strict';
+
+  // Mövcud v2 açarları saxlanılır ki, əvvəlki versiyadakı məlumatlar itməsin.
+  const LS_PRODUCTS='miniCafeProducts_v2';
+  const LS_CURRENCY='miniCafeCurrency_v2';
+  const LS_TABLE_COUNT='miniCafeTableCount_v2';
+  const LS_TABLE_CARTS='miniCafeTableCarts_v2';
+  const LS_SALES='miniCafeSales_v2';
+
+  // Yeni funksiyalar üçün əlavə açarlar.
+  const LS_TABLE_META='miniCafeTableMeta_v3';
+  const LS_CAFE_NAME='miniCafeName_v3';
+  const LS_PAYMENT='miniCafePayment_v3';
+
+  const $ = selector => document.querySelector(selector);
+  const safeParse = (value, fallback) => {
+    try { return JSON.parse(value); } catch { return fallback; }
+  };
+
+  let oldProducts = safeParse(localStorage.getItem('miniCafeProducts_v1') || '[]', []);
+  let products = safeParse(localStorage.getItem(LS_PRODUCTS) || 'null', null);
+  if(!Array.isArray(products)) products = Array.isArray(oldProducts) ? oldProducts : [];
+
+  let currency = localStorage.getItem(LS_CURRENCY) || localStorage.getItem('miniCafeCurrency_v1') || '₼';
+  let tableCount = Number(localStorage.getItem(LS_TABLE_COUNT) || 10);
+  if(![5,10,15,20].includes(tableCount)) tableCount=10;
+
+  let tableCarts = safeParse(localStorage.getItem(LS_TABLE_CARTS) || '{}', {});
+  if(!tableCarts || typeof tableCarts!=='object' || Array.isArray(tableCarts)) tableCarts={};
+
+  let sales = safeParse(localStorage.getItem(LS_SALES) || '[]', []);
+  if(!Array.isArray(sales)) sales=[];
+
+  let tableMeta = safeParse(localStorage.getItem(LS_TABLE_META) || '{}', {});
+  if(!tableMeta || typeof tableMeta!=='object' || Array.isArray(tableMeta)) tableMeta={};
+
+  let cafeName = localStorage.getItem(LS_CAFE_NAME) || 'Mini Kafe';
+  let activeTable = 1;
+  let editingProductId = null;
+  let lastCompletedSale = null;
+  let toastTimer = null;
+
+  const normalizeProduct = p => ({
+    id: p?.id ?? (Date.now()+Math.random()),
+    name: String(p?.name || '').trim(),
+    price: Math.max(0, Number(p?.price) || 0),
+    category: String(p?.category || 'Digər').trim() || 'Digər'
+  });
+  products = products.filter(Boolean).map(normalizeProduct).filter(p=>p.name);
+
+  function fmt(n){
+    return Number(n || 0).toLocaleString('az-AZ',{
+      minimumFractionDigits:2,
+      maximumFractionDigits:2
+    }) + ' ' + currency;
+  }
+
+  function localDateKey(d=new Date()){
+    const y=d.getFullYear();
+    const m=String(d.getMonth()+1).padStart(2,'0');
+    const day=String(d.getDate()).padStart(2,'0');
+    return `${y}-${m}-${day}`;
+  }
+
+  function localTime(d=new Date()){
+    return d.toLocaleTimeString('az-AZ',{hour:'2-digit',minute:'2-digit'});
+  }
+
+  function prettyDate(d=new Date()){
+    return d.toLocaleDateString('az-AZ',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+  }
+
+  function saveProducts(){ localStorage.setItem(LS_PRODUCTS, JSON.stringify(products)); }
+  function saveCurrency(){ localStorage.setItem(LS_CURRENCY, currency); }
+  function saveTableCount(){ localStorage.setItem(LS_TABLE_COUNT, String(tableCount)); }
+  function saveTableCarts(){ localStorage.setItem(LS_TABLE_CARTS, JSON.stringify(tableCarts)); }
+  function saveSales(){ localStorage.setItem(LS_SALES, JSON.stringify(sales)); }
+  function saveTableMeta(){ localStorage.setItem(LS_TABLE_META, JSON.stringify(tableMeta)); }
+  function saveCafeName(){ localStorage.setItem(LS_CAFE_NAME, cafeName); }
+
+  function toast(message){
+    const el=$('#toast');
+    el.textContent=message;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer=setTimeout(()=>el.classList.remove('show'),2600);
+  }
+
+  function currentCart(){
+    const key=String(activeTable);
+    if(!Array.isArray(tableCarts[key])) tableCarts[key]=[];
+    return tableCarts[key];
+  }
+
+  function currentMeta(){
+    const key=String(activeTable);
+    if(!tableMeta[key] || typeof tableMeta[key]!=='object'){
+      tableMeta[key]={note:'',discount:0,paymentMethod:localStorage.getItem(LS_PAYMENT)||'Nağd'};
+    }
+    if(!['Nağd','Kart','Qarışıq'].includes(tableMeta[key].paymentMethod)) tableMeta[key].paymentMethod='Nağd';
+    return tableMeta[key];
+  }
+
+  function cartSubtotal(cart=currentCart()){
+    return cart.reduce((sum,item)=>sum+(Number(item.price)||0)*(Number(item.qty)||0),0);
+  }
+
+  function clampedDiscount(value){
+    const n=Number(value);
+    if(!Number.isFinite(n)) return 0;
+    return Math.min(100,Math.max(0,n));
+  }
+
+  function cartTotals(){
+    const cart=currentCart();
+    const subtotal=cartSubtotal(cart);
+    const discount=clampedDiscount(currentMeta().discount);
+    const discountAmount=subtotal*(discount/100);
+    const total=Math.max(0,subtotal-discountAmount);
+    return {subtotal,discount,discountAmount,total};
+  }
+
+  function todaySales(){
+    const today=localDateKey();
+    return sales.filter(s=>s && s.date===today);
+  }
+
+  function countOpenTables(){
+    let count=0;
+    for(let i=1;i<=tableCount;i++){
+      if(Array.isArray(tableCarts[String(i)]) && tableCarts[String(i)].length) count++;
+    }
+    return count;
+  }
+
+  function updateHeader(){
+    $('#headerCafeName').textContent=`☕ ${cafeName || 'Mini Kafe'} Kassası`;
+    $('#headerDate').textContent=prettyDate();
+    document.title=`${cafeName || 'Mini Kafe'} — Kassa`;
+  }
+
+  function renderCategoryFilter(){
+    const select=$('#categoryFilter');
+    const previous=select.value;
+    const categories=[...new Set(products.map(p=>p.category || 'Digər'))]
+      .sort((a,b)=>a.localeCompare(b,'az'));
+    select.innerHTML='<option value="">Bütün kateqoriyalar</option>';
+    categories.forEach(category=>{
+      const option=document.createElement('option');
+      option.value=category;
+      option.textContent=category;
+      select.appendChild(option);
+    });
+    if(categories.includes(previous)) select.value=previous;
+  }
+
+  function renderProducts(){
+    const q=$('#search').value.trim().toLocaleLowerCase('az');
+    const selectedCategory=$('#categoryFilter').value;
+    const box=$('#products');
+
+    const filtered=products.filter(p=>{
+      const matchesText=(p.name+' '+(p.category||'')).toLocaleLowerCase('az').includes(q);
+      const matchesCategory=!selectedCategory || p.category===selectedCategory;
+      return matchesText && matchesCategory;
+    });
+
+    $('#productCountLabel').textContent=`${products.length} məhsul`;
+
+    if(!filtered.length){
+      box.innerHTML='<div class="empty">Uyğun məhsul tapılmadı. Yuxarıdakı sahələrdən yeni məhsul əlavə edə bilərsiniz.</div>';
+      return;
+    }
+
+    box.innerHTML='';
+    filtered.forEach(p=>{
+      const card=document.createElement('article');
+      card.className='product';
+
+      const main=document.createElement('div');
+      main.className='product-main';
+      main.tabIndex=0;
+      main.setAttribute('role','button');
+      main.setAttribute('aria-label',`${p.name} məhsulunu Masa ${activeTable} hesabına əlavə et`);
+      main.innerHTML=`
+        <div class="product-top">
+          <div class="product-name"></div>
+          <span class="product-category"></span>
+        </div>
+        <div class="product-price">${fmt(p.price)}</div>`;
+      main.querySelector('.product-name').textContent=p.name;
+      main.querySelector('.product-category').textContent=p.category || 'Digər';
+      main.addEventListener('click',()=>addToCart(p.id));
+      main.addEventListener('keydown',e=>{
+        if(e.key==='Enter' || e.key===' '){e.preventDefault();addToCart(p.id);}
+      });
+
+      const actions=document.createElement('div');
+      actions.className='product-actions';
+
+      const editBtn=document.createElement('button');
+      editBtn.className='secondary';
+      editBtn.type='button';
+      editBtn.textContent='Redaktə';
+      editBtn.addEventListener('click',()=>startEditProduct(p.id));
+
+      const removeBtn=document.createElement('button');
+      removeBtn.className='danger';
+      removeBtn.type='button';
+      removeBtn.textContent='Sil';
+      removeBtn.addEventListener('click',()=>removeProduct(p.id));
+
+      actions.append(editBtn,removeBtn);
+      card.append(main,actions);
+      box.appendChild(card);
+    });
+  }
+
+  function renderTables(){
+    const box=$('#tables');
+    box.innerHTML='';
+
+    for(let i=1;i<=tableCount;i++){
+      const hasOrder=Array.isArray(tableCarts[String(i)]) && tableCarts[String(i)].length>0;
+      const b=document.createElement('button');
+      b.type='button';
+      b.className='table-btn'+(i===activeTable?' active':'')+(hasOrder?' has-order':'');
+      b.textContent='Masa '+i;
+      b.setAttribute('aria-label',`Masa ${i}${hasOrder?' — açıq hesab var':''}`);
+      b.onclick=()=>{
+        persistActiveMeta();
+        activeTable=i;
+        renderTables();
+        renderCart();
+      };
+      box.appendChild(b);
+    }
+
+    $('#activeTableLabel').textContent='Masa '+activeTable;
+    $('#openTables').textContent=String(countOpenTables());
+  }
+
+  function renderCart(){
+    const cart=currentCart();
+    const box=$('#cart');
+    const meta=currentMeta();
+
+    $('#activeTableLabel').textContent='Masa '+activeTable;
+    $('#cartItemCount').textContent=`${cart.reduce((s,i)=>s+(Number(i.qty)||0),0)} məhsul`;
+
+    $('#tableNote').value=String(meta.note||'');
+    $('#discount').value=clampedDiscount(meta.discount);
+    $('#paymentMethod').value=meta.paymentMethod || 'Nağd';
+
+    if(!cart.length){
+      box.innerHTML='<div class="empty">Bu masa boşdur. Soldakı məhsullardan birinə toxunaraq hesaba əlavə edin.</div>';
+    }else{
+      box.innerHTML='';
+      cart.forEach(item=>{
+        const row=document.createElement('div');
+        row.className='cart-item';
+        row.innerHTML=`
+          <div class="cart-top">
+            <div class="cart-name"></div>
+            <div class="cart-price">${fmt((Number(item.price)||0)*(Number(item.qty)||0))}</div>
+          </div>
+          <div class="qty">
+            <button class="minus" type="button" aria-label="Sayını azalt">−</button>
+            <strong class="qty-value">${Number(item.qty)||0}</strong>
+            <button class="plus" type="button" aria-label="Sayını artır">+</button>
+            <span class="unit-price">${fmt(item.price)} / ədəd</span>
+            <button class="trash" type="button">Sil</button>
+          </div>`;
+        row.querySelector('.cart-name').textContent=item.name;
+        row.querySelector('.minus').onclick=()=>changeQty(item.id,-1);
+        row.querySelector('.plus').onclick=()=>changeQty(item.id,1);
+        row.querySelector('.trash').onclick=()=>removeCartItem(item.id);
+        box.appendChild(row);
+      });
+    }
+
+    renderTotals();
+  }
+
+  function renderTotals(){
+    const {subtotal,discountAmount,total}=cartTotals();
+    $('#subtotal').textContent=fmt(subtotal);
+    $('#discountAmount').textContent=discountAmount>0?`− ${fmt(discountAmount)}`:fmt(0);
+    $('#total').textContent=fmt(total);
+  }
+
+  function renderDaily(){
+    const ts=todaySales();
+    const total=ts.reduce((sum,s)=>sum+(Number(s.total)||0),0);
+    const avg=ts.length?total/ts.length:0;
+
+    $('#dailyTotal').textContent=fmt(total);
+    $('#dailyCount').textContent=String(ts.length);
+    $('#averageSale').textContent=fmt(avg);
+    $('#openTables').textContent=String(countOpenTables());
+
+    const list=$('#historyList');
+    if(!ts.length){
+      list.innerHTML='<div class="empty">Bu gün hələ tamamlanmış satış yoxdur.</div>';
+      return;
+    }
+
+    list.innerHTML='';
+    [...ts].reverse().forEach(sale=>{
+      const d=document.createElement('details');
+      d.className='history-item';
+
+      const summary=document.createElement('summary');
+      const meta=document.createElement('div');
+      meta.className='history-meta';
+      meta.innerHTML=`
+        <span>${escapeHtml(sale.time||'--:--')} • Masa ${Number(sale.table)||'-'} • ${Number(sale.itemCount)||0} məhsul</span>
+        <span class="history-total">${fmt(sale.total)}</span>`;
+      summary.appendChild(meta);
+      d.appendChild(summary);
+
+      const detail=document.createElement('div');
+      detail.className='history-detail';
+
+      const payment=sale.paymentMethod || 'Qeyd edilməyib';
+      const discount=Number(sale.discount)||0;
+      const note=sale.note ? `<div><strong>Qeyd:</strong> ${escapeHtml(sale.note)}</div>` : '';
+      let productsHtml='';
+      if(Array.isArray(sale.items) && sale.items.length){
+        productsHtml='<ul class="history-products">'+sale.items.map(i=>
+          `<li>${escapeHtml(i.name)} × ${Number(i.qty)||0} — ${fmt((Number(i.price)||0)*(Number(i.qty)||0))}</li>`
+        ).join('')+'</ul>';
+      }else{
+        productsHtml='<div>Məhsul detalları bu köhnə satış qeydində saxlanılmayıb.</div>';
+      }
+
+      detail.innerHTML=`
+        <div><strong>Ödəniş:</strong> ${escapeHtml(payment)}</div>
+        <div><strong>Endirim:</strong> ${discount.toLocaleString('az-AZ')}%</div>
+        ${note}
+        ${productsHtml}`;
+
+      const actions=document.createElement('div');
+      actions.className='history-actions';
+
+      const printBtn=document.createElement('button');
+      printBtn.type='button';
+      printBtn.className='ghost';
+      printBtn.textContent='Qəbzi çap et';
+      printBtn.onclick=()=>printReceipt(sale);
+
+      const deleteBtn=document.createElement('button');
+      deleteBtn.type='button';
+      deleteBtn.className='danger';
+      deleteBtn.textContent='Satışı sil';
+      deleteBtn.onclick=()=>deleteSale(sale.id);
+
+      actions.append(printBtn,deleteBtn);
+      detail.appendChild(actions);
+      d.appendChild(detail);
+      list.appendChild(d);
+    });
+  }
+
+  function escapeHtml(value){
+    return String(value??'')
+      .replaceAll('&','&amp;')
+      .replaceAll('<','&lt;')
+      .replaceAll('>','&gt;')
+      .replaceAll('"','&quot;')
+      .replaceAll("'",'&#039;');
+  }
+
+  function addProduct(){
+    const name=$('#name').value.trim();
+    const category=$('#category').value.trim() || 'Digər';
+    const price=Number.parseFloat($('#price').value);
+
+    if(!name || !Number.isFinite(price) || price<0){
+      alert('Məhsulun adını və düzgün qiyməti daxil edin.');
+      return;
+    }
+
+    if(editingProductId!==null){
+      const p=products.find(x=>String(x.id)===String(editingProductId));
+      if(!p){ cancelEditProduct(); return; }
+      p.name=name;
+      p.category=category;
+      p.price=Number(price.toFixed(2));
+
+      // Eyni məhsul açıq masa hesabındadırsa, məlumatı da yenilə ki,
+      // səbətdə eyni ID ilə iki fərqli qiymət yaranmasın.
+      Object.values(tableCarts).forEach(cart=>{
+        if(!Array.isArray(cart)) return;
+        cart.forEach(item=>{
+          if(String(item.id)===String(p.id)){
+            item.name=p.name;
+            item.price=p.price;
+          }
+        });
+      });
+      saveProducts();
+      saveTableCarts();
+      cancelEditProduct(false);
+      renderCategoryFilter();
+      renderProducts();
+      renderCart();
+      toast('Məhsul yeniləndi.');
+      return;
+    }
+
+    products.push({
+      id:Date.now()+Math.random(),
+      name,
+      category,
+      price:Number(price.toFixed(2))
+    });
+    saveProducts();
+    clearProductForm();
+    renderCategoryFilter();
+    renderProducts();
+    $('#name').focus();
+    toast('Məhsul əlavə edildi.');
+  }
+
+  function clearProductForm(){
+    $('#name').value='';
+    $('#category').value='';
+    $('#price').value='';
+  }
+
+  function startEditProduct(id){
+    const p=products.find(x=>String(x.id)===String(id));
+    if(!p) return;
+    editingProductId=p.id;
+    $('#name').value=p.name;
+    $('#category').value=p.category || 'Digər';
+    $('#price').value=Number(p.price).toFixed(2);
+    $('#addProduct').textContent='Yadda saxla';
+    $('#editBannerText').textContent=`“${p.name}” redaktə olunur`;
+    $('#editBanner').classList.add('visible');
+    $('#name').focus();
+  }
+
+  function cancelEditProduct(clear=true){
+    editingProductId=null;
+    $('#addProduct').textContent='+ Əlavə et';
+    $('#editBanner').classList.remove('visible');
+    if(clear) clearProductForm();
+    else clearProductForm();
+  }
+
+  function removeProduct(id){
+    const p=products.find(x=>String(x.id)===String(id));
+    if(!p) return;
+    if(!confirm(`“${p.name}” məhsulunu silmək istəyirsiniz?`)) return;
+    products=products.filter(x=>String(x.id)!==String(id));
+    if(String(editingProductId)===String(id)) cancelEditProduct();
+    saveProducts();
+    renderCategoryFilter();
+    renderProducts();
+    toast('Məhsul silindi.');
+  }
+
+  function addToCart(id){
+    const p=products.find(x=>String(x.id)===String(id));
+    if(!p) return;
+    const cart=currentCart();
+    const item=cart.find(x=>String(x.id)===String(id) && Number(x.price)===Number(p.price));
+    if(item) item.qty=(Number(item.qty)||0)+1;
+    else cart.push({id:p.id,name:p.name,price:Number(p.price),qty:1});
+    saveTableCarts();
+    renderCart();
+    renderTables();
+  }
+
+  function changeQty(id,delta){
+    const cart=currentCart();
+    const item=cart.find(x=>String(x.id)===String(id));
+    if(!item) return;
+    item.qty=(Number(item.qty)||0)+delta;
+    if(item.qty<=0){
+      tableCarts[String(activeTable)]=cart.filter(x=>String(x.id)!==String(id));
+    }
+    saveTableCarts();
+    renderCart();
+    renderTables();
+  }
+
+  function removeCartItem(id){
+    tableCarts[String(activeTable)]=currentCart().filter(x=>String(x.id)!==String(id));
+    saveTableCarts();
+    renderCart();
+    renderTables();
+  }
+
+  function persistActiveMeta(){
+    const meta=currentMeta();
+    meta.note=$('#tableNote').value.trim();
+    meta.discount=clampedDiscount($('#discount').value);
+    meta.paymentMethod=$('#paymentMethod').value;
+    saveTableMeta();
+    localStorage.setItem(LS_PAYMENT,meta.paymentMethod);
+  }
+
+  function clearActiveTable(){
+    tableCarts[String(activeTable)]=[];
+    tableMeta[String(activeTable)]={
+      note:'',
+      discount:0,
+      paymentMethod:localStorage.getItem(LS_PAYMENT)||'Nağd'
+    };
+    saveTableCarts();
+    saveTableMeta();
+  }
+
+  function completeSale(){
+    persistActiveMeta();
+    const cart=currentCart();
+    if(!cart.length){
+      alert('Bu masa boşdur.');
+      return;
+    }
+
+    const {subtotal,discount,discountAmount,total}=cartTotals();
+    const itemCount=cart.reduce((s,i)=>s+(Number(i.qty)||0),0);
+    const now=new Date();
+    const meta=currentMeta();
+
+    const sale={
+      id:Date.now()+Math.random(),
+      date:localDateKey(now),
+      time:localTime(now),
+      table:activeTable,
+      subtotal:Number(subtotal.toFixed(2)),
+      discount:Number(discount.toFixed(2)),
+      discountAmount:Number(discountAmount.toFixed(2)),
+      total:Number(total.toFixed(2)),
+      itemCount,
+      paymentMethod:meta.paymentMethod,
+      note:meta.note,
+      items:cart.map(i=>({
+        id:i.id,
+        name:i.name,
+        price:Number(i.price)||0,
+        qty:Number(i.qty)||0
+      }))
+    };
+
+    sales.push(sale);
+    saveSales();
+    lastCompletedSale=sale;
+
+    $('#saleMsgText').textContent=`Masa ${activeTable} satışı tamamlandı: ${fmt(total)} • ${meta.paymentMethod}`;
+    $('#saleMsg').classList.add('visible');
+
+    clearActiveTable();
+    renderCart();
+    renderTables();
+    renderDaily();
+
+    setTimeout(()=>$('#saleMsg').classList.remove('visible'),7000);
+  }
+
+  function deleteSale(id){
+    const sale=sales.find(s=>String(s.id)===String(id));
+    if(!sale) return;
+    if(!confirm(`Masa ${sale.table} üzrə ${fmt(sale.total)} məbləğində satışı tarixçədən silmək istəyirsiniz?`)) return;
+    sales=sales.filter(s=>String(s.id)!==String(id));
+    saveSales();
+    renderDaily();
+    toast('Satış tarixçədən silindi.');
+  }
+
+  function receiptHtml(sale, title='SATIŞ ÇEKİ'){
+    const items=Array.isArray(sale.items) ? sale.items : [];
+    const rows=items.map(i=>`
+      <tr>
+        <td>${escapeHtml(i.name)} × ${Number(i.qty)||0}</td>
+        <td style="text-align:right">${fmt((Number(i.price)||0)*(Number(i.qty)||0))}</td>
+      </tr>`).join('');
+
+    return `<!doctype html>
+      <html lang="az"><head><meta charset="utf-8"><title>${escapeHtml(cafeName)} — Qəbz</title>
+      <style>
+        body{font-family:Arial,sans-serif;color:#111;max-width:360px;margin:0 auto;padding:18px;font-size:13px}
+        h1{text-align:center;font-size:18px;margin:0 0 3px}h2{text-align:center;font-size:13px;margin:0 0 14px;font-weight:600}
+        .meta{border-top:1px dashed #999;border-bottom:1px dashed #999;padding:8px 0;margin-bottom:8px;line-height:1.55}
+        table{width:100%;border-collapse:collapse}td{padding:5px 0;vertical-align:top;border-bottom:1px dotted #ddd}
+        .sum{margin-top:10px;border-top:1px dashed #999;padding-top:8px}.line{display:flex;justify-content:space-between;margin:5px 0}
+        .total{font-size:17px;font-weight:700;margin-top:7px}.note{margin-top:10px;font-size:12px}.thanks{text-align:center;margin-top:16px;font-size:12px}
+        @media print{body{padding:0}}
+      </style></head><body>
+        <h1>${escapeHtml(cafeName || 'Mini Kafe')}</h1>
+        <h2>${title}</h2>
+        <div class="meta">
+          <div>Tarix: ${escapeHtml(sale.date||localDateKey())} ${escapeHtml(sale.time||localTime())}</div>
+          <div>Masa: ${Number(sale.table)||activeTable}</div>
+          <div>Ödəniş: ${escapeHtml(sale.paymentMethod||'Qeyd edilməyib')}</div>
+        </div>
+        <table>${rows || '<tr><td>Məhsul detalları yoxdur</td><td></td></tr>'}</table>
+        <div class="sum">
+          <div class="line"><span>Ara cəm</span><span>${fmt(sale.subtotal ?? sale.total)}</span></div>
+          <div class="line"><span>Endirim (${Number(sale.discount)||0}%)</span><span>− ${fmt(sale.discountAmount||0)}</span></div>
+          <div class="line total"><span>CƏMİ</span><span>${fmt(sale.total)}</span></div>
+        </div>
+        ${sale.note?`<div class="note"><strong>Qeyd:</strong> ${escapeHtml(sale.note)}</div>`:''}
+        <div class="thanks">Təşəkkür edirik!</div>
+        <script>window.onload=()=>{window.print();setTimeout(()=>window.close(),300)};<\/script>
+      </body></html>`;
+  }
+
+  function printReceipt(sale){
+    if(!sale){ alert('Çap ediləcək satış tapılmadı.'); return; }
+    const win=window.open('','_blank','width=430,height=720');
+    if(!win){ alert('Çap pəncərəsi brauzer tərəfindən bloklandı. Pop-up icazəsini aktiv edin.'); return; }
+    win.document.open();
+    win.document.write(receiptHtml(sale));
+    win.document.close();
+  }
+
+  function printCurrentBill(){
+    persistActiveMeta();
+    const cart=currentCart();
+    if(!cart.length){ alert('Cari masa boşdur.'); return; }
+    const totals=cartTotals();
+    const meta=currentMeta();
+    const preview={
+      date:localDateKey(),
+      time:localTime(),
+      table:activeTable,
+      subtotal:totals.subtotal,
+      discount:totals.discount,
+      discountAmount:totals.discountAmount,
+      total:totals.total,
+      itemCount:cart.reduce((s,i)=>s+(Number(i.qty)||0),0),
+      paymentMethod:meta.paymentMethod,
+      note:meta.note,
+      items:cart.map(i=>({...i}))
+    };
+    const win=window.open('','_blank','width=430,height=720');
+    if(!win){ alert('Çap pəncərəsi brauzer tərəfindən bloklandı. Pop-up icazəsini aktiv edin.'); return; }
+    win.document.open();
+    win.document.write(receiptHtml(preview,'CARİ HESAB'));
+    win.document.close();
+  }
+
+  function downloadFile(filename,content,type){
+    const blob=new Blob([content],{type});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download=filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+  }
+
+  function exportCsv(){
+    const ts=todaySales();
+    if(!ts.length){ alert('Bu gün üçün ixrac ediləcək satış yoxdur.'); return; }
+
+    const rows=[['Tarix','Saat','Masa','Məhsul sayı','Ara cəm','Endirim %','Endirim məbləği','Cəmi','Ödəniş','Qeyd']];
+    ts.forEach(s=>rows.push([
+      s.date||'',s.time||'',s.table||'',s.itemCount||0,
+      s.subtotal ?? s.total ?? 0,s.discount||0,s.discountAmount||0,s.total||0,
+      s.paymentMethod||'',s.note||''
+    ]));
+
+    const csv='\uFEFF'+rows.map(row=>row.map(value=>`"${String(value??'').replaceAll('"','""')}"`).join(';')).join('\n');
+    downloadFile(`mini-kafe-satis-${localDateKey()}.csv`,csv,'text/csv;charset=utf-8');
+    toast('CSV faylı hazırlandı.');
+  }
+
+  function exportBackup(){
+    persistActiveMeta();
+    const payload={
+      app:'Mini Kafe Kassası',
+      version:3,
+      exportedAt:new Date().toISOString(),
+      cafeName,
+      currency,
+      tableCount,
+      products,
+      tableCarts,
+      tableMeta,
+      sales
+    };
+    downloadFile(`mini-kafe-ehtiyat-${localDateKey()}.json`,JSON.stringify(payload,null,2),'application/json;charset=utf-8');
+    toast('Ehtiyat nüsxə yaradıldı.');
+  }
+
+  function importBackup(file){
+    const reader=new FileReader();
+    reader.onload=()=>{
+      try{
+        const data=JSON.parse(String(reader.result||''));
+        if(!data || typeof data!=='object') throw new Error('Yanlış format');
+        if(!Array.isArray(data.products) || !Array.isArray(data.sales)) throw new Error('Natamam ehtiyat nüsxə');
+        if(!confirm('Ehtiyat nüsxə bərpa ediləcək və cari məlumatlar əvəz olunacaq. Davam edilsin?')) return;
+
+        products=data.products.filter(Boolean).map(normalizeProduct).filter(p=>p.name);
+        sales=data.sales;
+        tableCarts=(data.tableCarts && typeof data.tableCarts==='object')?data.tableCarts:{};
+        tableMeta=(data.tableMeta && typeof data.tableMeta==='object')?data.tableMeta:{};
+        currency=['₼','₺','$','€'].includes(data.currency)?data.currency:'₼';
+        tableCount=[5,10,15,20].includes(Number(data.tableCount))?Number(data.tableCount):10;
+        cafeName=String(data.cafeName||'Mini Kafe').trim()||'Mini Kafe';
+        activeTable=1;
+
+        saveProducts(); saveSales(); saveTableCarts(); saveTableMeta(); saveCurrency(); saveTableCount(); saveCafeName();
+        $('#currency').value=currency;
+        $('#tableCount').value=String(tableCount);
+        $('#cafeName').value=cafeName;
+        renderAll();
+        toast('Ehtiyat nüsxə uğurla bərpa edildi.');
+      }catch(err){
+        alert('Fayl bərpa edilə bilmədi. Düzgün Mini Kafe ehtiyat nüsxəsi seçin.');
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  function renderAll(){
+    updateHeader();
+    renderCategoryFilter();
+    renderProducts();
+    renderTables();
+    renderCart();
+    renderDaily();
+  }
+
+  // Hadisələr
+  $('#addProduct').onclick=addProduct;
+  $('#cancelEdit').onclick=()=>cancelEditProduct();
+  $('#name').addEventListener('keydown',e=>{if(e.key==='Enter') addProduct();});
+  $('#category').addEventListener('keydown',e=>{if(e.key==='Enter') addProduct();});
+  $('#price').addEventListener('keydown',e=>{if(e.key==='Enter') addProduct();});
+  $('#search').addEventListener('input',renderProducts);
+  $('#categoryFilter').addEventListener('change',renderProducts);
+
+  $('#tableNote').addEventListener('input',()=>{
+    currentMeta().note=$('#tableNote').value;
+    saveTableMeta();
+  });
+  $('#discount').addEventListener('input',()=>{
+    const value=clampedDiscount($('#discount').value);
+    currentMeta().discount=value;
+    saveTableMeta();
+    renderTotals();
+  });
+  $('#discount').addEventListener('blur',()=>{
+    $('#discount').value=clampedDiscount($('#discount').value);
+  });
+  $('#paymentMethod').addEventListener('change',()=>{
+    currentMeta().paymentMethod=$('#paymentMethod').value;
+    saveTableMeta();
+    localStorage.setItem(LS_PAYMENT,$('#paymentMethod').value);
+  });
+
+  $('#clearCart').onclick=()=>{
+    if(!currentCart().length && !currentMeta().note && !currentMeta().discount) return;
+    if(confirm(`Masa ${activeTable} hesabı tam təmizlənsin?`)){
+      clearActiveTable();
+      renderCart();
+      renderTables();
+      toast(`Masa ${activeTable} təmizləndi.`);
+    }
+  };
+
+  $('#complete').onclick=completeSale;
+  $('#printCurrent').onclick=printCurrentBill;
+  $('#printLastSale').onclick=()=>printReceipt(lastCompletedSale);
+
+  $('#currency').value=currency;
+  $('#tableCount').value=String(tableCount);
+  $('#cafeName').value=cafeName;
+
+  $('#saveSettings').onclick=()=>{
+    const nextCurrency=$('#currency').value;
+    const nextTableCount=Number($('#tableCount').value);
+    const nextCafeName=$('#cafeName').value.trim() || 'Mini Kafe';
+
+    currency=nextCurrency;
+    tableCount=[5,10,15,20].includes(nextTableCount)?nextTableCount:10;
+    cafeName=nextCafeName;
+
+    if(activeTable>tableCount) activeTable=1;
+    saveCurrency(); saveTableCount(); saveCafeName();
+    renderAll();
+    toast('Ayarlar yadda saxlanıldı.');
+  };
+
+  $('#currency').onchange=()=>{
+    currency=$('#currency').value;
+    saveCurrency();
+    renderProducts(); renderCart(); renderDaily();
+  };
+
+  $('#tableCount').onchange=()=>{
+    tableCount=Number($('#tableCount').value);
+    if(activeTable>tableCount) activeTable=1;
+    saveTableCount();
+    renderTables(); renderCart();
+  };
+
+  $('#demo').onclick=()=>{
+    if(products.length && !confirm('Nümunə məhsullar mövcud məhsullara əlavə edilsin?')) return;
+    const demo=[
+      {name:'Espresso',category:'Qəhvə',price:3.00},
+      {name:'Americano',category:'Qəhvə',price:4.00},
+      {name:'Cappuccino',category:'Qəhvə',price:5.00},
+      {name:'Latte',category:'Qəhvə',price:5.50},
+      {name:'Çay',category:'İsti içkilər',price:2.00},
+      {name:'Su',category:'Soyuq içkilər',price:1.00},
+      {name:'Kruassan',category:'Şirniyyat',price:3.50},
+      {name:'Çizkeyk',category:'Şirniyyat',price:6.00}
+    ];
+    demo.forEach(item=>products.push({id:Date.now()+Math.random(),...item}));
+    saveProducts();
+    renderCategoryFilter();
+    renderProducts();
+    toast('Nümunə məhsullar əlavə edildi.');
+  };
+
+  $('#clearProducts').onclick=()=>{
+    if(!products.length) return;
+    if(confirm('Bütün qeydiyyatlı məhsullar silinsin? Bu əməliyyat açıq masa hesablarını silməyəcək.')){
+      products=[];
+      saveProducts();
+      cancelEditProduct();
+      renderCategoryFilter();
+      renderProducts();
+      toast('Bütün məhsullar silindi.');
+    }
+  };
+
+  $('#exportCsv').onclick=exportCsv;
+  $('#exportBackup').onclick=exportBackup;
+  $('#importBackupBtn').onclick=()=>$('#importBackupFile').click();
+  $('#importBackupFile').addEventListener('change',e=>{
+    const file=e.target.files?.[0];
+    if(file) importBackup(file);
+    e.target.value='';
+  });
+
+  $('#resetDay').onclick=()=>{
+    const ts=todaySales();
+    if(!ts.length) return;
+    if(confirm('Bu günün bütün tamamlanmış satış qeydləri silinsin?')){
+      const today=localDateKey();
+      sales=sales.filter(s=>s.date!==today);
+      saveSales();
+      lastCompletedSale=null;
+      renderDaily();
+      toast('Bugünkü satış tarixçəsi sıfırlandı.');
+    }
+  };
+
+  // Səhifə bağlanmazdan əvvəl aktiv masanın qeyd/ödəniş məlumatını saxla.
+  window.addEventListener('beforeunload',persistActiveMeta);
+
+  saveProducts();
+  renderAll();
+})();
+</script>
+</body>
+</html>
